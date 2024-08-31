@@ -96,3 +96,24 @@ input[type="file"]::-webkit-file-upload-button:hover {
     padding: 15px 30px;
     font-size: 18px;
 }
+
+/* Results styling */
+#results {
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    background-color: #4CAF50; /* Default color for match */
+    transition: background-color 0.3s ease;
+}
+
+#results.no-match {
+    background-color: #f44336; /* Color for no match */
+}
+
+#results.match {
+    background-color: #4CAF50; /* Color for match */
+}
