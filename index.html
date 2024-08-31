@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Capture/Upload Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Video Comparison Interface</h1>
+    
+    <!-- First Video Section -->
+    <div class="video-section">
+        <h2>First Video</h2>
+        <video id="videoPreview1" autoplay muted></video>
+        <div class="controls">
+            <input type="file" id="videoUpload1" accept="video/*">
+            <button id="startCamera1">Start Camera</button>
+            <button id="stopCamera1" disabled>Stop Camera</button>
+            <button id="captureVideo1" disabled>Capture Video</button>
+        </div>
+    </div>
+
+    <!-- Second Video Section -->
+    <div class="video-section">
+        <h2>Second Video</h2>
+        <video id="videoPreview2" autoplay muted></video>
+        <div class="controls">
+            <input type="file" id="videoUpload2" accept="video/*">
+            <button id="startCamera2">Start Camera</button>
+            <button id="stopCamera2" disabled>Stop Camera</button>
+            <button id="captureVideo2" disabled>Capture Video</button>
+        </div>
+    </div>
+
+    <!-- Compare Button -->
+    <button id="compareVideos" disabled>Compare Videos</button>
+
+    <script src="script.js"></script>
+    <!-- Include TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+    <!-- Include MobileNet model -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+</body>
+</html>
