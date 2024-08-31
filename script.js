@@ -14,7 +14,7 @@ const stopCameraButton2 = document.getElementById('stopCamera2');
 const captureVideoButton2 = document.getElementById('captureVideo2');
 
 const compareButton = document.getElementById('compareVideos');
-const resultsDiv = document.getElementById('results')
+const resultsDiv = document.getElementById('results');
 
 let mediaStream1 = null;
 let mediaRecorder1 = null;
@@ -28,6 +28,7 @@ let recordedChunks2 = [];
 let video1Ready = false;
 let video2Ready = false;
 
+// Load MobileNet model
 let mobilenetModel;
 async function loadModel() {
     mobilenetModel = await mobilenet.load();
@@ -87,9 +88,9 @@ function stopCamera(videoElement, startButton, stopButton, captureButton, mediaS
     }
 }
 
+// Function to handle video capture
 function captureVideo(videoElement, mediaStream, mediaRecorder, recordedChunks, captureButton) {
     if (mediaStream) {
-        // If mediaRecorder is not initialized or is inactive, start a new recording session
         if (!mediaRecorder || mediaRecorder.state === 'inactive') {
             recordedChunks = [];
             mediaRecorder = new MediaRecorder(mediaStream);
@@ -105,7 +106,7 @@ function captureVideo(videoElement, mediaStream, mediaRecorder, recordedChunks, 
                 videoElement.controls = true;
                 captureButton.textContent = 'Capture Video';
 
-                // Mark video as ready based on the videoElement
+                // Mark video as ready
                 if (videoElement === videoPreview1) {
                     video1Ready = true;
                 } else if (videoElement === videoPreview2) {
@@ -116,13 +117,10 @@ function captureVideo(videoElement, mediaStream, mediaRecorder, recordedChunks, 
             mediaRecorder.start();
             captureButton.textContent = 'Stop Recording';
         } else if (mediaRecorder.state === 'recording') {
-            // Stop recording if currently recording
             mediaRecorder.stop();
-            captureButton.textContent = 'Capture Video'; // Reset button text
         }
     }
 }
-
 
 // Function to extract a frame from the video
 function extractFrame(videoElement) {
@@ -161,14 +159,12 @@ async function compareVideos() {
     resultsDiv.textContent = `Comparison Result: ${result}`;
 }
 
-
 // Function to compare predictions
 function comparePredictions(predictions1, predictions2) {
     const topPrediction1 = predictions1[0] ? predictions1[0].className : 'Unknown';
     const topPrediction2 = predictions2[0] ? predictions2[0].className : 'Unknown';
     return topPrediction1 === topPrediction2 ? 'Match' : 'No Match';
 }
-
 
 // Set up event listeners for video upload and camera controls
 handleVideoUpload(videoPreview1, videoUpload1, video1Ready);
@@ -198,6 +194,7 @@ captureVideoButton2.addEventListener('click', () => {
     captureVideo(videoPreview2, mediaStream2, mediaRecorder2, recordedChunks2, captureVideoButton2);
 });
 
+// Ensure compareButton is defined before adding event listener
 if (compareButton) {
     compareButton.addEventListener('click', compareVideos);
 } else {
