@@ -1,4 +1,6 @@
-// script.js
+
+const VIDEO1_KEY = 'video1';
+const VIDEO2_KEY = 'video2';
 
 // Get references to the HTML elements
 const videoPreview1 = document.getElementById('videoPreview1');
@@ -23,8 +25,10 @@ let mediaRecorder2 = null;
 let recordedChunks2 = [];
 
 // Track if videos are ready
-let video1Ready = false;
-let video2Ready = false;
+const videoReady = {
+    [VIDEO1_KEY]: false,
+    [VIDEO2_KEY]: false
+};
 
 // Load MobileNet model
 let mobilenetModel;
@@ -34,9 +38,8 @@ async function loadModel() {
 }
 loadModel();
 
-// Function to enable/disable compare button
 function updateCompareButton() {
-    if (video1Ready && video2Ready) {
+    if (videoReady[VIDEO1_KEY] && videoReady[VIDEO2_KEY]) {
         compareButton.disabled = false;
     } else {
         compareButton.disabled = true;
@@ -44,21 +47,21 @@ function updateCompareButton() {
 }
 
 // Function to handle video upload
-function handleVideoUpload(videoElement, fileInputElement, readyFlag) {
+function handleVideoUpload(videoElement, fileInputElement, videoKey) {
     fileInputElement.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
             const url = URL.createObjectURL(file);
             videoElement.src = url;
             videoElement.controls = true;
-            readyFlag = true; // Update ready flag
+            videoReady[videoKey] = true; // Update ready flag
             updateCompareButton(); // Check if compare button should be enabled
         }
     });
 }
 
 // Function to start the camera
-async function startCamera(videoElement, startButton, stopButton, captureButton) {
+async function startCamera(videoElement, startButton, stopButton, captureButton, videoKey) {
     try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
         videoElement.srcObject = mediaStream;
@@ -66,7 +69,8 @@ async function startCamera(videoElement, startButton, stopButton, captureButton)
         startButton.disabled = true;
         stopButton.disabled = false;
         captureButton.disabled = false;
-
+        videoReady[videoKey] = false;
+        updateCompareButton();
         return mediaStream;
     } catch (error) {
         console.error('Error accessing the camera', error);
@@ -86,7 +90,7 @@ function stopCamera(videoElement, startButton, stopButton, captureButton, mediaS
     }
 }
 
-function captureVideo(videoElement, mediaStream, mediaRecorder, recordedChunks, captureButton) {
+function captureVideo(videoElement, mediaStream, mediaRecorder, recordedChunks, captureButton, videoKey) {
     if (mediaStream) {
         if (!mediaRecorder || mediaRecorder.state === 'inactive') {
             recordedChunks.length = 0; // Clear recorded chunks
@@ -108,6 +112,8 @@ function captureVideo(videoElement, mediaStream, mediaRecorder, recordedChunks, 
                 videoElement.play(); // Automatically play the recorded video
                 captureButton.textContent = 'Capture Video';
                 captureButton.disabled = true; // Disable capture button after recording is complete
+                videoReady[videoKey] = true;
+                updateCompareButton();
             };
             mediaRecorder.start();
             captureButton.textContent = 'Stop Recording';
@@ -163,15 +169,15 @@ function comparePredictions(predictions1, predictions2) {
 }
 
 // Set up event listeners for video upload and camera controls
-handleVideoUpload(videoPreview1, videoUpload1, video1Ready);
-handleVideoUpload(videoPreview2, videoUpload2, video2Ready);
+handleVideoUpload(videoPreview1, videoUpload1, VIDEO1_KEY);
+handleVideoUpload(videoPreview2, videoUpload2, VIDEO2_KEY);
 
 startCameraButton1.addEventListener('click', async () => {
-    mediaStream1 = await startCamera(videoPreview1, startCameraButton1, stopCameraButton1, captureVideoButton1);
+    mediaStream1 = await startCamera(videoPreview1, startCameraButton1, stopCameraButton1, captureVideoButton1, VIDEO1_KEY);
 });
 
 startCameraButton2.addEventListener('click', async () => {
-    mediaStream2 = await startCamera(videoPreview2, startCameraButton2, stopCameraButton2, captureVideoButton2);
+    mediaStream2 = await startCamera(videoPreview2, startCameraButton2, stopCameraButton2, captureVideoButton2, VIDEO2_KEY);
 });
 
 stopCameraButton1.addEventListener('click', () => {
@@ -187,11 +193,11 @@ stopCameraButton2.addEventListener('click', () => {
 });
 
 captureVideoButton1.addEventListener('click', () => {
-    mediaRecorder1 = captureVideo(videoPreview1, mediaStream1, mediaRecorder1, recordedChunks1, captureVideoButton1);
+    mediaRecorder1 = captureVideo(videoPreview1, mediaStream1, mediaRecorder1, recordedChunks1, captureVideoButton1, VIDEO1_KEY);
 });
 
 captureVideoButton2.addEventListener('click', () => {
-    mediaRecorder2 = captureVideo(videoPreview2, mediaStream2, mediaRecorder2, recordedChunks2, captureVideoButton2);
+    mediaRecorder2 = captureVideo(videoPreview2, mediaStream2, mediaRecorder2, recordedChunks2, captureVideoButton2, VIDEO2_KEY);
 });
 
 // Ensure compareButton is defined before adding event listener
