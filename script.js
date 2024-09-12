@@ -38,6 +38,7 @@ async function loadModel() {
 }
 loadModel();
 
+// Function to check if we need to enable the compare button
 function updateCompareButton() {
     if (videoReady[VIDEO1_KEY] && videoReady[VIDEO2_KEY]) {
         compareButton.disabled = false;
@@ -85,8 +86,6 @@ function stopCamera(videoElement, startButton, stopButton, captureButton, mediaS
         startButton.disabled = false; // Re-enable the start camera button
         stopButton.disabled = true; // Disable the stop camera button
         captureButton.disabled = true; // Disable the capture video button
-
-        // Do not reset recordedChunks or mediaRecorder here, to avoid interfering with recording
     }
 }
 
